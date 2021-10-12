@@ -1,0 +1,36 @@
+### assumes ubuntu image
+---
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: install packages
+  apt: name={{ item }} 
+  state: latest
+  with_items:
+      - curl
+      - build-essential
+      - git
+      - python3
+      - python3-pip
+      - python3-setuptools
+      - python3-dev
+      - cython
+      - default-jre
+      - gnuplot-x11
+      - bioperl
+      - libssl-dev
+      - cmake
+      - hdf5-tools
+      - pkg-config
+
+- name: install conda and snakemake
+  include_tasks: conda.yml
+
+- name: install docker
+  include_tasks: docker.yml
+
+- name: install singularity
+  include_tasks: singularity.yml
+
+- name: install nextflow
+  include_tasks: nextflow.yml

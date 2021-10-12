@@ -1,0 +1,20 @@
+---
+- name: nextflow | check if nextflow is installed
+  stat: path="/usr/local/bin/nextflow"
+  register: nextflowinstalled
+
+- name: nextflow | install nextflow if not installed
+  shell: "curl -s https://get.nextflow.io | bash"
+  when: not nextflowinstalled.stat.exists
+
+- name: nextflow | make nextflow executable
+  shell: "chmod +x nextflow"
+  when: not nextflowinstalled.stat.exists
+
+- name: nextflow | mv nextflow to bin
+  shell: "mv nextflow /usr/local/bin/nextflow"
+  when: not nextflowinstalled.stat.exists
+
+- name: nextflow | update nextflow if already installed
+  shell: "nextflow self-update"
+  when: nextflowinstalled.stat.exists

@@ -1,0 +1,37 @@
+---
+- name: conda | check if conda is installed
+  stat: path="/home/ubuntu/miniconda3/bin/conda"
+  register: condainstalled
+
+- name: conda | grab miniconda installer
+  get_url: url=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh dest=/tmp/miniconda.sh mode=0755
+  when: not condainstalled.stat.exists
+
+- name: conda | install conda if not installed
+  command: /tmp/miniconda.sh -b
+  when: not condainstalled.stat.exists
+
+- name: conda | check if conda is in PATH
+  shell: "grep miniconda3 ~/.bashrc"
+  register: condainpath
+  ignore_errors: True
+
+- name: conda | add conda to PATH
+  lineinfile: path="~/.bashrc" line="export PATH=/home/ubuntu/miniconda3/bin:$PATH"
+  when: condainpath.stdout == ""
+
+- name: conda | add extra conda channels
+  command: "conda config --add channels bioconda"
+  when: not condainstalled.stat.exists
+
+- name: conda | install mamba
+  command: "conda install -n base -c conda-forge mamba"
+  when: not condainstalled.stat.exists
+
+- name: conda | create snakemake environment
+  command: "mamba create -c conda-forge -c bioconda -n snakemake snakemake"
+  when: not condainstalled.stat.exists
+
+- name: conda | update conda if already installed
+  shell: "conda update conda"
+  when: condainstalled.stat.exists

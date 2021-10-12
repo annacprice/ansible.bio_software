@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  roles:
+    - bio_software
+  tags: bio_software
