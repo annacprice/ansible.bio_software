@@ -1,14 +1,14 @@
 ---
 - name: docker | remove old versions of docker if installed
   apt:
-    name: '{{ item }}'
+    pkg:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
     state: absent
-  with_items:
-    - docker
-    - docker-engine
-    - docker.io
-    - containerd
-    - runc
+  become: true
 
 - name: docker | check if docker is installed
   shell: dpkg-query -W 'docker'
@@ -17,29 +17,30 @@
 
 - name: docker | install docker dependencies
   apt:
-    name: "{{ item }}"
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
     state: latest
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gnupg
-    - lsb-release
+  become: true
 
 - name: docker | add docker gpg key
   shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
   register: add_repository_key
-  when: dockerinstalled|failed
+  when: "'no packages found matching docker' in dockerinstalled"
   
 - name: docker | add stable repo
-  shell: "echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null"
-  when: dockerinstalled|failed
+  shell: 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+  when: "'no packages found matching docker' in dockerinstalled"
+  become: true
 
 - name: docker | install/update docker
   apt:
-    name: "{{ item }}"
     state: latest
-  with_items:
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+  become: true
