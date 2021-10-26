@@ -2,23 +2,28 @@
 - name: singularity | install software dependencies
   apt:
     state: latest
-  with_items:
-    - build-essential
-    - libssl-dev
-    - uuid-dev
-    - libgpgme11-dev
-    - squashfs-tools
-    - libseccomp-dev
-    - pkg-config
-    
+    pkg:
+      - build-essential
+      - libssl-dev
+      - uuid-dev
+      - libgpgme11-dev
+      - squashfs-tools
+      - libseccomp-dev
+      - pkg-config
+  become: true
+
 - name: singularity | grab installer for go
   get_url:
    url: https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz
    dest: /home/ubuntu
    mode: 0755 
 
-- name: singularity | remove old versions of go and install
-  shell: "rm -rf /usr/local/go && tar -C /usr/local -xzf /home/ubuntu/go1.17.2.linux-amd64.tar.gz"
+- name: singularity | remove old versions of go 
+  shell: "rm -rf /usr/local/go" 
+  become: yes
+
+- name: singularity | install go
+  shell: "tar -C /usr/local -xzf /home/ubuntu/go1.17.2.linux-amd64.tar.gz"
   become: yes
 
 - name: singularity| check if go is in PATH
@@ -30,9 +35,9 @@
   lineinfile: path="~/.bashrc" line="export PATH=/usr/local/go/bin:$PATH"
   when: goinpath.stdout == ""
 
-- name: singularity | install go dependencies
-  command: go get -u -v github.com/golang/dep/cmd/dep
- 
+#- name: singularity | install go dependencies
+#  command: go get -u -v github.com/golang/dep/cmd/dep
+    
 - name: singularity | check if singularity is installed
   stat: path="/usr/local/singularity"
   register: singularityinstalled
@@ -40,6 +45,7 @@
 - name: singularity | remove singularity if already installed
   shell: "rm -rf /usr/local/singularity"
   when: singularityinstalled.stat.exists
+  become: yes
 
 - name: singularity | create directory for singularity
   file:
@@ -54,18 +60,21 @@
     dest: "/home/ubuntu/singularity/src/github.com/sylabs/singularity"
 
 - name: singularity | compile the Singularity binary | mconfig
-  command: ./mconfig --prefix=/usr/local/singularity
+  shell: "export PATH=/usr/local/go/bin:$PATH; ./mconfig --prefix=/usr/local/singularity"
   args:
     chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity"
+  become: true
 
 - name: singularity | compile the Singularity binary | make
   make:
     chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity/builddir"
+  become: yes
 
 - name: singularity | compile the Singularity binary | make install
   make:
     target: install
     chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity/builddir"
+  become: yes
 
 - name: singularity | check if singularity is in PATH
   shell: "grep singularity ~/.bashrc"
