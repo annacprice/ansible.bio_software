@@ -14,7 +14,9 @@
 - name: nextflow | mv nextflow to bin
   shell: "mv nextflow /usr/local/bin/nextflow"
   when: not nextflowinstalled.stat.exists
+  become: yes
 
 - name: nextflow | update nextflow if already installed
   shell: "nextflow self-update"
   when: nextflowinstalled.stat.exists
+  become: yes
