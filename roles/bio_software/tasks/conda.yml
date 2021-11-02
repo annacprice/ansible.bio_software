@@ -22,15 +22,15 @@
   when: condainpath.stdout == ""
 
 - name: conda | add extra conda channels
-  command: "conda config --add channels bioconda"
+  command: "/home/ubuntu/miniconda3/bin/conda config --add channels bioconda"
   when: not condainstalled.stat.exists
 
 - name: conda | install mamba
-  command: "conda install -n base -c conda-forge mamba"
+  command: "/home/ubuntu/miniconda3/bin/conda install -n base -c conda-forge mamba -y"
   when: not condainstalled.stat.exists
 
 - name: conda | create snakemake environment
-  command: "mamba create -c conda-forge -c bioconda -n snakemake snakemake"
+  command: "/home/ubuntu/miniconda3/bin/mamba create -c conda-forge -c bioconda -n snakemake snakemake -y"
   when: not condainstalled.stat.exists
 
 - name: conda | update conda if already installed
