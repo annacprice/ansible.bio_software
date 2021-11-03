@@ -2,26 +2,28 @@
 ---
 - name: update apt cache
   apt: update_cache=yes
+  become: true
 
 - name: install packages
-  apt: name={{ item }} 
-  state: latest
-  with_items:
-      - curl
-      - build-essential
-      - git
-      - python3
-      - python3-pip
-      - python3-setuptools
-      - python3-dev
-      - cython
-      - default-jre
-      - gnuplot-x11
-      - bioperl
-      - libssl-dev
-      - cmake
-      - hdf5-tools
-      - pkg-config
+  apt: 
+      pkg: 
+          - curl
+          - build-essential
+          - git
+          - python3
+          - python3-pip
+          - python3-setuptools
+          - python3-dev
+          - cython
+          - default-jre
+          - gnuplot-x11
+          - bioperl
+          - libssl-dev
+          - cmake
+          - hdf5-tools
+          - pkg-config
+      state: latest
+  become: true
 
 - name: install conda and snakemake
   include_tasks: conda.yml
