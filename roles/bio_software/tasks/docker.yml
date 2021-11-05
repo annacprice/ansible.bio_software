@@ -48,3 +48,8 @@
       - containerd.io
     update_cache: yes
   become: true
+
+- name: docker | add ubuntu as user
+  shell: "sudo usermod -aG docker ubuntu"
+  when: "'no packages found' in dockerinstalled.stdout"
+  become: true

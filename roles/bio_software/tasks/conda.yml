@@ -33,6 +33,14 @@
   command: "/home/ubuntu/miniconda3/bin/mamba create -c conda-forge -c bioconda -n snakemake snakemake -y"
   when: not condainstalled.stat.exists
 
+- name: conda | intialise conda
+  command: "/home/ubuntu/miniconda3/bin/conda init bash"
+  when: not condainstalled.stat.exists
+
+- name: conda | prevent conda activating base by default
+  command: "/home/ubuntu/miniconda3/bin/conda config --set auto_activate_base false"
+  when:  not condainstalled.stat.exists
+
 - name: conda | update conda if already installed
   shell: "/home/ubuntu/miniconda3/bin/conda update conda -y"
   when: condainstalled.stat.exists

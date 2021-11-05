@@ -84,3 +84,11 @@
 - name: singularity | add singularity to PATH
   lineinfile: path="~/.bashrc" line="export PATH=/usr/local/singularity/bin:$PATH"
   when: singularityinpath.stdout == ""
+
+- name: singularity | remove singularity source code
+  shell: "rm -rf /home/ubuntu/singularity"
+  become: yes
+
+- name: singularity | remove go tar
+  shell: "rm -f /home/ubuntu/go1.17.2.linux-amd64.tar.gz"
+  become: yes
