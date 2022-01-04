@@ -38,7 +38,7 @@ Run the playbook
 cd ansible.bio_software
 ansible-playbook playbook.yml
 ```
-Once the ansible playbook has finsihed running, the $PATH will need to be reloaded
+Once the ansible playbook has finished running, the $PATH will need to be reloaded (e.g. start new login shell or use `source`)
 
 ### Checking install
 Suggested commands to check the software has installed correctly
