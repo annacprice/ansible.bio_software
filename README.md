@@ -1,4 +1,6 @@
 # ansible.bio_software
+This playbook is for installing bioinformatics tools for Ubuntu OS. It has been tested on Ubuntu 20.04.3 LTS.
+
 Installs the following:
 * miniconda
 * docker 
