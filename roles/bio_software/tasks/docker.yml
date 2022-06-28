@@ -41,10 +41,10 @@
 
 - name: docker | install/update docker
   apt:
-    state: latest
+    state: present
     pkg:
-      - docker-ce
-      - docker-ce-cli
+      - "docker-ce={{ docker_version }}"
+      - "docker-ce-cli={{ docker_version }}"
       - containerd.io
     update_cache: yes
   become: true

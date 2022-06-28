@@ -1,10 +1,10 @@
 ---
 - name: conda | check if conda is installed
-  stat: path="/home/ubuntu/miniconda3/bin/conda"
+  stat: path="{{ home }}/miniconda3/bin/conda"
   register: condainstalled
 
 - name: conda | grab miniconda installer
-  get_url: url=https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh dest=/tmp/miniconda.sh mode=0755
+  get_url: url=https://repo.anaconda.com/miniconda/Miniconda3-py39_{{ miniconda_version }}-Linux-x86_64.sh dest=/tmp/miniconda.sh mode=0755
   when: not condainstalled.stat.exists
 
 - name: conda | install conda if not installed
@@ -18,29 +18,29 @@
   ignore_errors: True
 
 - name: conda | add conda to PATH
-  lineinfile: path="~/.bashrc" line="export PATH=/home/ubuntu/miniconda3/bin:$PATH"
+  lineinfile: path="~/.bashrc" line="export PATH={{ home }}/miniconda3/bin:$PATH"
   when: condainpath.stdout == ""
 
 - name: conda | add extra conda channels
-  command: "/home/ubuntu/miniconda3/bin/conda config --add channels bioconda"
+  command: "{{ home }}/miniconda3/bin/conda config --add channels bioconda"
   when: not condainstalled.stat.exists
 
 - name: conda | install mamba
-  command: "/home/ubuntu/miniconda3/bin/conda install -n base -c conda-forge mamba -y"
+  command: "{{ home }}/miniconda3/bin/conda install -n base -c conda-forge mamba -y"
   when: not condainstalled.stat.exists
 
 - name: conda | create snakemake environment
-  command: "/home/ubuntu/miniconda3/bin/mamba create -c conda-forge -c bioconda -n snakemake snakemake -y"
+  command: "{{ home }}/miniconda3/bin/mamba create -c conda-forge -c bioconda -n snakemake snakemake -y"
   when: not condainstalled.stat.exists
 
 - name: conda | intialise conda
-  command: "/home/ubuntu/miniconda3/bin/conda init bash"
+  command: "{{ home }}/miniconda3/bin/conda init bash"
   when: not condainstalled.stat.exists
 
 - name: conda | prevent conda activating base by default
-  command: "/home/ubuntu/miniconda3/bin/conda config --set auto_activate_base false"
-  when:  not condainstalled.stat.exists
+  command: "{{ home }}/miniconda3/bin/conda config --set auto_activate_base false"
+  when: not condainstalled.stat.exists
 
 - name: conda | update conda if already installed
-  shell: "/home/ubuntu/miniconda3/bin/conda update conda -y"
+  shell: "{{ home }}/miniconda3/bin/conda conda install conda={{ miniconda_version }} -y"
   when: condainstalled.stat.exists

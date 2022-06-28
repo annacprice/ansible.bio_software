@@ -1,5 +1,6 @@
 ---
-- hosts: test
+- hosts: localhost
+  connection: local
   roles:
     - bio_software
   tags: bio_software

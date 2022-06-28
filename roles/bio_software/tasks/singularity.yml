@@ -14,19 +14,24 @@
 
 - name: singularity | grab installer for go
   get_url:
-   url: https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz
-   dest: /home/ubuntu
+   url: https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz
+   dest: "{{ home }}"
    mode: 0755 
 
+- name: singularity | check if go is installed
+  stat: path="/usr/local/go"
+  register: goinstalled
+
 - name: singularity | remove old versions of go 
-  shell: "rm -rf /usr/local/go" 
+  shell: "rm -rf /usr/local/go"
+  when: goinstalled.stat.exists
   become: yes
 
 - name: singularity | install go
-  shell: "tar -C /usr/local -xzf /home/ubuntu/go1.17.2.linux-amd64.tar.gz"
+  shell: "tar -C /usr/local -xzf {{ home }}/ubuntu/go{{ go_version }}.linux-amd64.tar.gz"
   become: yes
 
-- name: singularity| check if go is in PATH
+- name: singularity | check if go is in PATH
   shell: "grep go ~/.bashrc"
   register: goinpath
   ignore_errors: True
@@ -35,9 +40,6 @@
   lineinfile: path="~/.bashrc" line="export PATH=/usr/local/go/bin:$PATH"
   when: goinpath.stdout == ""
 
-#- name: singularity | install go dependencies
-#  command: go get -u -v github.com/golang/dep/cmd/dep
-    
 - name: singularity | check if singularity is installed
   stat: path="/usr/local/singularity"
   register: singularityinstalled
@@ -49,31 +51,31 @@
 
 - name: singularity | create directory for singularity
   file:
-    path: "/home/ubuntu/singularity/src/github.com/sylabs/"
+    path: "{{ home }}/singularity/src/github.com/sylabs/"
     state: directory
     recurse: yes
 
 - name: singularity | clone the Singularity repository
   git:
     repo: https://github.com/sylabs/singularity.git
-    version: v3.8.3
-    dest: "/home/ubuntu/singularity/src/github.com/sylabs/singularity"
+    version: "{{ singularity_version }}"
+    dest: "{{ home }}/singularity/src/github.com/sylabs/singularity"
 
 - name: singularity | compile the Singularity binary | mconfig
   shell: "export PATH=/usr/local/go/bin:$PATH; ./mconfig --prefix=/usr/local/singularity"
   args:
-    chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity"
+    chdir: "{{ home }}/singularity/src/github.com/sylabs/singularity"
   become: true
 
 - name: singularity | compile the Singularity binary | make
   make:
-    chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity/builddir"
+    chdir: "{{ home }}/singularity/src/github.com/sylabs/singularity/builddir"
   become: yes
 
 - name: singularity | compile the Singularity binary | make install
   make:
     target: install
-    chdir: "/home/ubuntu/singularity/src/github.com/sylabs/singularity/builddir"
+    chdir: "{{ home }}/singularity/src/github.com/sylabs/singularity/builddir"
   become: yes
 
 - name: singularity | check if singularity is in PATH
@@ -86,9 +88,9 @@
   when: singularityinpath.stdout == ""
 
 - name: singularity | remove singularity source code
-  shell: "rm -rf /home/ubuntu/singularity"
+  shell: "rm -rf {{ home }}/singularity"
   become: yes
 
 - name: singularity | remove go tar
-  shell: "rm -f /home/ubuntu/go1.17.2.linux-amd64.tar.gz"
+  shell: "rm -f {{ home }}/go{{ go_version }}.linux-amd64.tar.gz"
   become: yes

@@ -1,4 +1,4 @@
-### assumes ubuntu image
+### assumes ubuntu 20.04 image
 ---
 - name: update apt cache
   apt: update_cache=yes
