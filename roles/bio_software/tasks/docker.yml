@@ -46,7 +46,7 @@
       - "docker-ce={{ docker_version }}"
       - "docker-ce-cli={{ docker_version }}"
       - containerd.io
-    update_cache: yes
+    update_cache: true
   become: true
 
 - name: docker | add ubuntu as user
