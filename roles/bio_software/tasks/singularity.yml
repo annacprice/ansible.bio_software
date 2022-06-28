@@ -28,7 +28,7 @@
   become: yes
 
 - name: singularity | install go
-  shell: "tar -C /usr/local -xzf {{ home }}/ubuntu/go{{ go_version }}.linux-amd64.tar.gz"
+  shell: "tar -C /usr/local -xzf {{ home }}/go{{ go_version }}.linux-amd64.tar.gz"
   become: yes
 
 - name: singularity | check if go is in PATH
