@@ -32,11 +32,9 @@
 
 - name: docker | add docker gpg key
   shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/docker-archive-keyring.gpg"
-  when: "'no packages found' in dockerinstalled.stdout"
-  
+
 - name: docker | add stable repo
   shell: 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
-  when: "'no packages found' in dockerinstalled.stdout"
   become: true
 
 - name: docker | install/update docker
