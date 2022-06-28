@@ -10,4 +10,4 @@ go_version: 1.17.8
 
 docker_version: 5:20.10.14~3-0~ubuntu-focal
 
-conda_version: 4.12.0
+miniconda_version: 4.12.0
